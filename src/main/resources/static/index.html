@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Klinika</title>
+	<link rel="shortcut icon" href="http://getdrawings.com/free-icon/icon-clinic-67.png">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link href="css/styles.css" rel="stylesheet" />
+	<link href="css/toast.css" rel="stylesheet" />
+	<link href="css/login.css" rel="stylesheet" />
+	<link href="css/signin.css" rel="stylesheet" />
+	<link href="css/bootstrap.min.css" rel="stylesheet" />
+	<script src="https://unpkg.com/vue"></script>
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<script src="https://api-maps.yandex.ru/2.1/?apikey=83da5d55-a56d-4543-93ca-e32343500611&lang=en_US" type="text/javascript"></script>
+	<script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
+	<link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css"/>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+	
+	
+    
+    <script type="text/x-template" id="modal-template">
+      <transition name="modal">
+        <div class="modal-mask">
+          <div class="modal-wrapper">
+            <div class="modal-container">
+
+              <div class="modal-header">
+                <slot name="header">
+                  default header
+                </slot>
+              </div>
+
+              <div class="modal-body">
+                <slot name="body">
+                  default body
+                </slot>
+              </div>
+
+              <div class="modal-footer">
+                <slot name="footer">
+                  default footer
+                  <button class="modal-default-button" @click="$emit('close')">
+                    OK
+                  </button>
+                </slot>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </script>
+</head>
+<body>
+	<div id="klinika">
+	 	 <router-view></router-view>
+	</div>
+
+	<script src="js/vue.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/vue-router.js"></script>
+	<script src="js/axios.js"></script>
+	<script src="js/toast.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/moment.min.js"></script>
+	<script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
+	<script src="https://unpkg.com/vue-chartkick@0.5.1"></script>
+	
+	<script src="app/dodavanje_superadmina.js"></script>
+	<script src="app/profil_admin.js"></script>
+	<script src="app/profil_lekar.js"></script>
+	<script src="app/med_sestre.js"></script>
+	<script src="app/lekar_zakazani_pregledi.js"></script>
+	<script src="app/zahtevi_odmor_odsustvo.js"></script>
+	<script src="app/izvestaji.js"></script>
+	<script src="app/zakazi_salu_op.js"></script>
+	<script src="app/zakazi_salu.js"></script>
+	<script src="app/zahtevi_pregled_operacija.js"></script>
+	<script src="app/nadji_pacijenta.js"></script>
+	<script src="app/kalendar_godisnji.js"></script>
+	<script src="app/kalendar_nedeljni.js"></script>
+	<script src="app/kalendar_lekar.js"></script>
+	<script src="app/overa_recepta.js"></script>
+	<script src="app/kalendar.js"></script>
+	<script src="app/zahtev_odmor.js"></script>
+	<script src="app/med_sestra_pocetna.js"></script>
+	<script src="app/pacijenti.js"></script>
+	<script src="app/potvrdi_registraciju.js"></script>
+	<script src="app/detalji_klinike.js"></script>
+	<script src="app/prikaz_klinika.js"></script>
+	<script src="app/zakazani_pregledi.js"></script>
+	<script src="app/pacijent_pocetna.js"></script>
+	<script src="app/lekari.js"></script>
+	<script src="app/sale.js"></script>
+	<script src="app/profil_med_sestre.js"></script>
+	<script src="app/dodavanje_admina.js"></script>
+	<script src="app/predefinisani_pregledi.js"></script>
+	<script src="app/tipovi_pregleda.js"></script>
+	<script src="app/dodavanje_pregleda.js"></script>
+	<script src="app/admin_pocetna.js"></script>
+	<script src="app/lekar_pocetna.js"></script>
+	<script src="app/odobri_zahtevr.js"></script>
+	<script src="app/sifrarnik_lekova.js"></script>
+	<script src="app/sifrarnik_dijagnoza.js"></script>
+	<script src="app/profil_superadmina.js"></script>
+	<script src="app/registracija_klinike.js"></script>
+	<script src="app/stranica_za_registraciju.js"></script>
+	<script src="app/empty.js"></script>
+	<script src="app/app.js"></script>
+	<script>
+	Vue.component("modal", {
+	    template: "#modal-template"
+	  });
+	</script>
+</body>
+</html>
