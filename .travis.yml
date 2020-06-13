@@ -1,0 +1,29 @@
+sudo: required
+language: java 
+jdk: oraclejdk8
+
+ 
+services:
+ - postgresql
+
+ 
+before_install:
+  - chmod +x mvnw
+  
+addons:
+  sonarcloud:
+    organization: isamrstim10
+    token: 516077734a5d445922fc70aecd855673d2dcecb9
+
+script:
+ - cd MRS2020_T10
+ -  mvn clean install
+ -  mvn sonar:sonar -Dsonar.projectKey=Andjelaaa_MRS_ISA_T10 -Dsonar.organization=isamrstim10 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=516077734a5d445922fc70aecd855673d2dcecb9
+
+dist: trusty
+
+deploy:
+  provider: heroku
+  api_key: c4db25e0-39fb-4775-8582-d6780d5f52dd
+  app: app-klinikatim10
+  skip_cleanup: true
