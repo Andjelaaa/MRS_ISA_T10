@@ -1,8 +1,16 @@
 Vue.component('klinike-prikaz', {
 	data: function(){
 		return{
+			currentDate:'',
+			n: null,
+			y: 0,
+			m: 0,
+			d: 0,
 			klinike: [],
-			idPacijenta: 1,
+			pacijent: {},
+			uloga: {},
+			pretraga: false,
+			cena: 0.0,
 			tipPregleda: {naziv: null},
 			datum: null,
 			tipoviPregleda: null,
@@ -30,18 +38,14 @@ Vue.component('klinike-prikaz', {
 		        <a class="nav-link" href="#/pacijentpregledi">Pregledi/Operacije</a>
 		      </li>
 		      <li class="nav-item">
-		        <a class="nav-link" href="#/">Zdravstveni karton</a>
+		        <a class="nav-link" href="#/zdravstveniKarton">Zdravstveni karton</a>
 		      </li>
 		      <li class="nav-item">
-		        <a class="nav-link" href="#/">Profil</a>
-		      </li>
-		       <li class="nav-item">
-		        <a class="nav-link" href="#/">Odjavi se</a>
+		        <a class="nav-link" href="#/profilpacijenta">Profil: {{pacijent.ime}} {{pacijent.prezime}}</a>
 		      </li>
 		    </ul>
 		    <form class="form-inline my-2 my-lg-0">
-		      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-		      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+		      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="odjava()">Odjavi se</button>
 		    </form>
 		  </div>
 		</nav>
@@ -51,10 +55,11 @@ Vue.component('klinike-prikaz', {
 		<div class="float-left">
 		<table class="table table-hover table-light">
 			<tr>
-			<th>Naziv klinike</th>
-			<th>Adersa</th>
+			<th @click="sort('naziv')" class="class1">Naziv klinike</th>
+			<th @click="sort('adresa')" class="class1">Adersa</th>
 			<th @click="sort('prosecnaOcena')" class="class1">Prosecna ocena</th>
 			<th>Kontakt</th>
+			<th v-show='pretraga'>Cena</th>
 			<th></th>
 			</tr>
 			
@@ -63,6 +68,7 @@ Vue.component('klinike-prikaz', {
 				<td>{{k.adresa}}</td>
 				<td>{{k.prosecnaOcena}}</td>
 				<td>{{k.kontaktKlinike}}</td>
+				<td v-show='pretraga'>{{dobaviCenu()}}</td>
 				<td><button v-on:click = "detalji(k.id)" class="btn btn-light" >Detalji</button></td>
 			</tr>
 		</table>
@@ -71,7 +77,7 @@ Vue.component('klinike-prikaz', {
 		<table class="table table-hover table-light">
 			<tr>
 				<td>Pretrazi preglede od: </td>
-				<td><input class="form-control"  id="datum" type="date" v-model="datum"></td>
+				<td><input class="form-control"  name="datum" id="datum" type="date" v-model="datum" ></td>
 				<td>{{this.greskaDatum}}</td>
 			</tr>
 			
@@ -95,7 +101,19 @@ Vue.component('klinike-prikaz', {
 	`, 
 	
 	methods : {
-		
+		dobaviCenu()
+		{
+			// za klinikaId i this.tipPregleda.naziv nadji cenu
+			if(!this.pretraga)
+				return 0.0;
+			axios
+	       	.get('api/stavkacenovnika/cena/' + this.tipPregleda.naziv,  { headers: { Authorization: 'Bearer ' + this.token }} )
+	       	.then(response => (this.cena = response.data))
+	       	.catch((res)=>{
+	        	  console.log('neuspesno');
+	       	});
+			return this.cena;
+		},
 		validacija: function(){
 			this.greskaDatum = '';
 			this.greskaTipPregleda = '';
@@ -120,26 +138,31 @@ Vue.component('klinike-prikaz', {
 				console.log('cao');
 				return;
 			}
+			
 			this.greskaDatum = '';
 			this.greskaTipPregleda = '';
 			// da se desi pretraga po datumu i tipu pregleda
-			
+			this.pretraga = true;
 			axios
-	       	.post('api/klinika/slobodnitermini/'+ this.datum + '/' + this.tipPregleda.naziv)
+	       	.get('api/klinika/slobodnitermini/'+ this.datum + '/' + this.tipPregleda.naziv, { headers: { Authorization: 'Bearer ' + this.token }})
 	       	.then(response => (this.klinike = response.data))
 	       	.catch((res)=>{
+	       			this.greskaDatum = 'Proverite datum';
 	        	  console.log('neuspesno');
 	       	})
 		},
 		
 		detalji: function(klinikaId){
-			if(this.datum && this.greskaTipPregleda.naziv){
-				// onda detalje za zakazivanje
+			if(this.pretraga){
+				// odabrani su kriterijumi pretrage
+				//console.log(klinikaId);
+				this.$router.push('/detaljiKlinike/'+klinikaId+'/'+this.datum+'/'+this.tipPregleda.naziv);
 			}
 			else{
 				// samo detalji za kliniku
-				console.log(klinikaId);
-				this.$router.push('/detaljiKlinike/'+klinikaId+'/'+this.datum+'/'+this.tipPregleda.naziv);
+				// nisu odabrani kriterijumi pretrage
+				this.$router.push('/lekariKlinike/'+klinikaId);
+				
 			}
 		},
 		sort:function(s) {
@@ -148,7 +171,12 @@ Vue.component('klinike-prikaz', {
 		      this.currentSortDir = this.currentSortDir==='asc'?'desc':'asc';
 		    }
 		    this.currentSort = s;
-		  }
+		  },
+		  
+		odjava : function(){
+				localStorage.removeItem("token");
+				this.$router.push('/');
+		}
 		
 	},
 	
@@ -165,16 +193,36 @@ Vue.component('klinike-prikaz', {
 		},
 	
 	mounted () {
-		axios
-		.get('api/klinika/all')
-		.then(res => {
-			this.klinike = res.data;
-		})
-		axios
-          .get('api/tippregleda/all')
-          .then(res => {
-        	  this.tipoviPregleda = res.data;
-          })
-	},
-
+			
+			this.token = localStorage.getItem("token");
+			axios
+			.get('/auth/dobaviUlogovanog', { headers: { Authorization: 'Bearer ' + this.token }} )
+		    .then(response => { this.pacijent = response.data;
+			    axios
+				.put('/auth/dobaviulogu', this.pacijent, { headers: { Authorization: 'Bearer ' + this.token }} )
+			    .then(response => {
+			    	this.uloga = response.data;
+			    	if (this.uloga != "ROLE_PACIJENT") {
+			    		router.push('/');
+			    	}
+			    	else
+			    	{
+			    		//this.currentDate = new Date().toLocaleDateString();
+			 
+			    		axios
+			    		.get('api/klinika/all',  { headers: { Authorization: 'Bearer ' + this.token }} )
+			    		.then(res => {
+			    			this.klinike = res.data;
+			    		})
+			    		axios
+			              .get('api/tippregleda/all',  { headers: { Authorization: 'Bearer ' + this.token }} )
+			              .then(res => {
+			            	  this.tipoviPregleda = res.data;
+			            })
+			    	}
+			    })
+			    .catch(function (error) { console.log(error);}); 
+		    })
+		    .catch(function (error) { router.push('/'); });
+		}
 });

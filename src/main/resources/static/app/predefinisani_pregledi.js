@@ -2,11 +2,14 @@ Vue.component('predefpregledi', {
 	data: function(){
 		return{
 			pregledi: null,
-			idPacijenta: 1,
+			pacijent: {},
+			uloga: {},
 			datum: null,
+			greska:"",
 			tipoviPregleda: null,
 			tipPregleda: {naziv: null},
-			showModal: false
+			showModal: false,
+			nemaRezultata: ""
 		}
 	},
 	
@@ -27,18 +30,14 @@ Vue.component('predefpregledi', {
 		        <a class="nav-link" href="#/pacijentpregledi">Pregledi/Operacije</a>
 		      </li>
 		      <li class="nav-item">
-		        <a class="nav-link" href="#/">Zdravstveni karton</a>
+		        <a class="nav-link" href="#/zdravstveniKarton">Zdravstveni karton</a>
 		      </li>
 		      <li class="nav-item">
-		        <a class="nav-link" href="#/">Profil</a>
-		      </li>
-		       <li class="nav-item">
-		        <a class="nav-link" href="#/">Odjavi se</a>
+		        <a class="nav-link" href="#/profilpacijent">Profil: {{this.pacijent.ime}} {{this.pacijent.prezime}}</a>
 		      </li>
 		    </ul>
 		    <form class="form-inline my-2 my-lg-0">
-		      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-		      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+		      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="odjava()">Odjavi se</button>
 		    </form>
 		  </div>
 		</nav>
@@ -47,7 +46,7 @@ Vue.component('predefpregledi', {
 			<tr>
 				<td>Pretrazi preglede od: </td>
 				<td><input class="form-control" id="datum" type="date" v-model="datum"></td>
-				<td><button  v-on:click = "pretragaDatum()" class="btn btn-light">Pretrazi</button></td>
+				<td>{{this.greska}}</td>
 			</tr>
 			
 			<tr>
@@ -57,10 +56,11 @@ Vue.component('predefpregledi', {
 						<option v-for="t in tipoviPregleda" :value="t.naziv">{{t.naziv}}</option>
 					</select>
 				</td>
-				<td><button v-on:click = "pretragaTip()" class="btn btn-light">Pretrazi</button></td>
+				<td><button v-on:click = "pretrazi()" class="btn btn-light">Pretrazi</button></td>
 			</tr>
 		</table>
 		<br>
+		<h4>{{this.nemaRezultata}}</h4>
 		<table  class="table table-hover table-light ">
 			<tr>
 			<th>Datum i vreme</th>
@@ -99,12 +99,16 @@ Vue.component('predefpregledi', {
 	`,
 	
 	methods : {
+		odjava : function(){
+			localStorage.removeItem("token");
+			this.$router.push('/');
+		},
 		zakazi : function(pregledId, i){
 			// upit da li je siguran
 			
 			this.pregledi.splice(i,1);
 			axios
-	          .post('api/pregled/'+pregledId+'/'+this.idPacijenta)
+	          .get('api/pregled/'+pregledId, { headers: { Authorization: 'Bearer ' + this.token }})
 	          .then(res => {
 	        	console.log('uspesno');
 	        	// poruka o uspesnom zakazivanju
@@ -116,57 +120,66 @@ Vue.component('predefpregledi', {
 		validacija : function(){
 			return 0;
 		},
-		pretragaDatum : function(){
-			if(this.validacija() == 1)
-				return;
-			console.log(this.datum);
-			axios
-			.get('api/pregled/datum/'+this.datum)
-			.then(res=>{
-				this.pregledi = res.data;
-				if(this.pregledi == null)
-					console.log('nema rezultat');
-			}).catch((res)=>{
-				// nema rezultata ili nesto drugo da je u pitanju
-				console.log('nema rezultat');
-			})
-		},
 		
-		pretragaTip: function(){
-			if(this.validacija() == 1)
-				return;
-			axios
-			.get('api/pregled/tip/'+this.tipPregleda.naziv)
-			.then(res=>{
-				this.pregledi = res.data;
-				if(this.pregledi == null)
-					console.log('nema rezultat');
-			}).catch((res)=>{
-				// nema rezultata ili nesto drugo da je u pitanju
-				console.log('neuspesno');
-			})
-		},
-		
+		 pretrazi: function(){
+			 if(!this.datum || !this.tipPregleda.naziv){
+					this.greska = 'Datum i tip pregleda su obavezni!';
+					return 1;
+			}
+			 this.nemaRezultata = "";
+			 this.greska = "";
+				axios
+		       	.get('api/pregled/search/'+ this.datum + '/' + this.tipPregleda.naziv, { headers: { Authorization: 'Bearer ' + this.token }})
+		       	.then(res => {this.pregledi = res.data;
+		       		if(this.pregledi[0] == null){
+		       			this.nemaRezultata = "Nema rezultata pretrage";
+		       			console.log('nema rezultat');
+		       		}
+		       		
+		       	}).catch((res)=>{
+					// nema rezultata ili nesto drugo da je u pitanju
+					console.log('neuspesno');
+				})
+
+			},
 		
 	},
 	
-	mounted () {
-//		axios
-//		.get('api/pregled/slobodniPregledi/'+this.$route.params.name)
-//		.then(res => {
-//			this.pregledi = res.data;
-//		})
-// odkomentarisati kad se pregled poveze sa klinikom!
+	mounted () {		
+		this.token = localStorage.getItem("token");
 		axios
-		.get('api/pregled/all')
-		.then(res => {
-			this.pregledi = res.data;
-		})
-		axios
-          .get('api/tippregleda/all')
-          .then(res => {
-        	  this.tipoviPregleda = res.data;
+		.get('/auth/dobaviUlogovanog', { headers: { Authorization: 'Bearer ' + this.token }} )
+	    .then(response => { this.pacijent = response.data;
+		    axios
+			.put('/auth/dobaviulogu', this.pacijent, { headers: { Authorization: 'Bearer ' + this.token }} )
+		    .then(response => {
+		    	this.uloga = response.data;
+		    	if (this.uloga != "ROLE_PACIJENT") {
+		    		router.push('/');
+		    	}else{
+		    		/*
+		    		axios
+		    		.get('api/pregled/all')
+		    		.then(res => {
+		    			this.pregledi = res.data;
+		    			*/
+		    		// pravicemo se da ovo radi, jer u bazi nema ni jednog predef pregleda, mrzelo me da pravim
+		    		axios
+		    		.get('api/pregled/slobodniPregledi/'+this.$route.params.name,  { headers: { Authorization: 'Bearer ' + this.token }})
+		    		.then(res => {
+		    			this.pregledi = res.data;
+		    		})
+		    		axios
+		              .get('api/tippregleda/all', { headers: { Authorization: 'Bearer ' + this.token }})
+		              .then(res => {
+		            	  this.tipoviPregleda = res.data;
 
-          })
-	},
+		              })
+		    	}
+		    })
+		    .catch(function (error) { console.log(error);});
+		    
+	    })
+	    .catch(function (error) { router.push('/'); });	 
+	}
 });

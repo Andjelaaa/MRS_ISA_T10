@@ -1,9 +1,11 @@
 Vue.component('klinika-detalji', {
 	data: function(){
 		return{
+			
 			pretraga: {ime: '', prezime: '', ocena: 0, lekariTermini: []},
 			klinika: {naziv: '', adresa: '', prosecnaOcena: 0, kontaktKlinike: '000/000'},
-			idPacijenta: 1,
+			pacijent: {},
+			uloga: {},
 			tipPregleda: {naziv: null},
 			datum: '',
 			tipoviPregleda: null,
@@ -43,15 +45,11 @@ Vue.component('klinika-detalji', {
 		        <a class="nav-link" href="#/">Zdravstveni karton</a>
 		      </li>
 		      <li class="nav-item">
-		        <a class="nav-link" href="#/">Profil</a>
-		      </li>
-		       <li class="nav-item">
-		        <a class="nav-link" href="#/">Odjavi se</a>
-		      </li>
+		        <a class="nav-link" href="#/profilpacijent">Profil: {{pacijent.ime}} {{pacijent.prezime}}</a>
+		     </li>
 		    </ul>
 		    <form class="form-inline my-2 my-lg-0">
-		      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-		      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+		      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="odjava()">Odjavi se</button>
 		    </form>
 		  </div>
 		</nav>
@@ -157,6 +155,12 @@ Vue.component('klinika-detalji', {
 	`, 
 	
 	methods : {
+		
+		odjava : function(){
+			localStorage.removeItem("token");
+			this.$router.push('/');
+		},
+		
 		brzoZakazivanje: function(klinikaId)
 		{
 			this.$router.push('/predefinisanipregledi/'+ this.$route.params.name)
@@ -177,7 +181,7 @@ Vue.component('klinika-detalji', {
 			if(this.izabranoVreme)
 			{
 				axios
-		       	.post('api/klinika/proveriTermin/'+ this.izabranoVreme, s)
+		       	.post('api/klinika/proveriTermin/'+ this.izabranoVreme, s,  { headers: { Authorization: 'Bearer ' + this.token }})
 		       	.then(res => {
 		       		// ne znam kako drugacije ovaj prozor 
 		       		var r = confirm("Potvrdi termin: " + this.$route.params.date + " vreme: " + this.izabranoVreme);
@@ -188,10 +192,10 @@ Vue.component('klinika-detalji', {
 		       			this.zahtevPregled.datum = this.$route.params.date;
 		       			this.zahtevPregled.vreme = this.izabranoVreme;
 		       			this.zahtevPregled.klinikaId = this.$route.params.name;
-		       			this.zahtevPregled.pacijentId = this.idPacijenta;
+		       			this.zahtevPregled.pacijentId = this.pacijent.id;
 		       			this.sveJeOk = true;
 		       			axios
-		       			.post('api/pregled/pacijentzahtev', this.zahtevPregled)
+		       			.post('api/pregled/pacijentzahtev', this.zahtevPregled, { headers: { Authorization: 'Bearer ' + this.token }})
 		       			.then(res=>{
 		       				
 		       			})
@@ -205,7 +209,7 @@ Vue.component('klinika-detalji', {
 		       	})
 			}
 		},
-		sort:function(s) {
+		sort: function(s) {
 		    //if s == current sort, reverse
 		    if(s === this.currentSort) {
 		      this.currentSortDir = this.currentSortDir==='asc'?'desc':'asc';
@@ -216,7 +220,7 @@ Vue.component('klinika-detalji', {
 		  pretrazi: function(){
 			  this.pretraga.lekariTermini = this.sviSlobodni;
 				axios
-		       	.post('api/lekar/slobodniLekari/search', this.pretraga)
+		       	.post('api/lekar/slobodniLekari/search', this.pretraga, { headers: { Authorization: 'Bearer ' + this.token }})
 		       	.then(response => (this.lekariTermini = response.data));
 
 			}
@@ -235,24 +239,44 @@ Vue.component('klinika-detalji', {
 		    });
 		  }
 		},
+		
+	
 	
 	mounted () {
-		axios
-		.get('api/klinika/detalji/'+ this.$route.params.name)
-		.then(res => {
-			this.klinika = res.data;
-		})
-		
-		axios
-		.get('api/klinika/slobodnitermini/lekari/'+ this.$route.params.date + '/' + this.$route.params.tip)
-       	.then(response => {
-       		this.lekariTermini = response.data;
-       		this.sviSlobodni = this.lekariTermini;
-       	})
-       	.catch((res)=>{
-        	  console.log('neuspesno');
-       	})
-		
-	},
+			
+			this.token = localStorage.getItem("token");
+			axios
+			.get('/auth/dobaviUlogovanog', { headers: { Authorization: 'Bearer ' + this.token }} )
+		    .then(response => { this.pacijent = response.data;
+			    axios
+				.put('/auth/dobaviulogu', this.pacijent, { headers: { Authorization: 'Bearer ' + this.token }} )
+			    .then(response => {
+			    	this.uloga = response.data;
+			    	if (this.uloga != "ROLE_PACIJENT") {
+			    		router.push('/');
+			    	}
+			    	else{
+			    		axios
+			    		.get('api/klinika/detalji/'+ this.$route.params.name,  { headers: { Authorization: 'Bearer ' + this.token }} )
+			    		.then(res => {
+			    			this.klinika = res.data;
+			    		})
+			    		
+			    		axios
+			    		.get('api/klinika/slobodnitermini/lekari/'+ this.$route.params.date + '/' + this.$route.params.tip,  { headers: { Authorization: 'Bearer ' + this.token }} )
+			           	.then(response => {
+			           		this.lekariTermini = response.data;
+			           		this.sviSlobodni = this.lekariTermini;
+			           	})
+			           	.catch((res)=>{
+			            	  console.log('neuspesno');
+			           	})
+			    	}
+			    })
+			    .catch(function (error) { console.log(error);});
+			    
+		    })
+		    .catch(function (error) { router.push('/'); });	 
+		}
 
 });

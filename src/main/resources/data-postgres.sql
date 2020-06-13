@@ -77,31 +77,31 @@ insert into izvestaj (opis, dijagnoza_id, recept_id) values ('Paokej', 2, 5);
 insert into izvestaj (opis, dijagnoza_id, recept_id) values ('Pacijen he hej je okej', null, null);
 insert into izvestaj (opis,dijagnoza_id, recept_id) values ('Pacijent okej',null, null); 
 
-insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
-('2020-06-07 19:00:00', 5, 1, 30, null, 2, 1, 1, 1, 1, 1);
-insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
-('2020-05-23 10:29:00', 5, 3, 30, 2, 1, 1, 2, 1, 1, 2);
-insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
-('2020-06-10 19:00:00', 5, 1, 30, null, 2, 1, 2, 1, 1, 1);
-insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
-('2020-05-23 16:29:00', 5, 4, 30, 3, 1, 1, 2, 1, 1, 1);
-insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
-('2020-05-19 01:29:00', 5, 4, 30, 4, 1, 1, 2, 1, 1, 1);
-insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
-('2020-05-18 01:29:00', 5, 4, 30, 5, 1, 1, 2, 1, 1, 2);
-insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
-('2020-05-19 01:29:00', 5, 4, 30, 6, 1, 1, 2, 1, 1, 2);
-insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
-('2020-05-17 01:29:00', 5, 4, 30, 7, 1, 1, 2, 1, 1, 1);
+insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+('2020-06-07 19:00:00', 5, 1, 30, null, 2, 1, 1, 1, 1, 1,1);
+insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+('2020-05-23 10:29:00', 5, 3, 30, 2, 1, 1, 2, 1, 1, 2, 1);
+insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+('2020-06-10 19:00:00', 5, 1, 30, null, 2, 1, 2, 1, 1, 1, 1);
+insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+('2020-05-23 16:29:00', 5, 4, 30, 3, 1, 1, 2, 1, 1, 1, 1);
+insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+('2020-05-19 01:29:00', 5, 4, 30, 4, 1, 1, 2, 1, 1, 1, 1);
+insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+('2020-05-18 01:29:00', 5, 4, 30, 5, 1, 1, 2, 1, 1, 2, 1);
+insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+('2020-05-19 01:29:00', 5, 4, 30, 6, 1, 1, 2, 1, 1, 2, 1);
+insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+('2020-05-17 01:29:00', 5, 4, 30, 7, 1, 1, 2, 1, 1, 1, 1);
 
-insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
-('2020-06-22 15:30:00', 5, 3, 60, null, 1, 1, null, 1, 1, 1);
---insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
---('2020-05-20 17:00:00', 5, 1, 60, null, 1, 1, 2, 1, 1, 1);
---insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
---('2020-05-22 15:00:00', 5, 1, 60, null, 1, 2, 2, 1, 1, 1);
---insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id) values
---('2020-05-17 21:44:00', 5, 4, 30, 1, 1, 1, 2, 1, 1, 1);
+insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+('2020-06-22 15:30:00', 5, 3, 60, null, 1, 1, null, 1, 1, 1,1);
+--insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+--('2020-05-20 17:00:00', 5, 1, 60, null, 1, 1, 2, 1, 1, 1, 1);
+--insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+--('2020-05-22 15:00:00', 5, 1, 60, null, 1, 2, 2, 1, 1, 1, 1);
+--insert into pregled(datum_vreme, popust, status, trajanje, izvestaj_id, lekar_id, pacijent_id, sala_id, tip_pregleda_id, zkarton_id, klinika_id, version) values
+--('2020-05-17 21:44:00', 5, 4, 30, 1, 1, 1, 2, 1, 1, 1, 1);
 --
 
 
