@@ -16,9 +16,8 @@ addons:
     token: 516077734a5d445922fc70aecd855673d2dcecb9
 
 script:
- - cd MRS2020_T10
- -  mvn clean install
- -  mvn sonar:sonar -Dsonar.projectKey=Andjelaaa_MRS_ISA_T10 -Dsonar.organization=isamrstim10 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=516077734a5d445922fc70aecd855673d2dcecb9
+ -  ./mvnw clean install
+ -  ./mvnw sonar:sonar -Dsonar.projectKey=Andjelaaa_MRS_ISA_T10 -Dsonar.organization=isamrstim10 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=516077734a5d445922fc70aecd855673d2dcecb9
 
 dist: trusty
 
