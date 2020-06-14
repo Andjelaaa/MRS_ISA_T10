@@ -27,6 +27,9 @@ Vue.component('izvestaji', {
 		        <a class="nav-link" href="#/lekari">Lekari</a>
 		      </li>
 		      <li class="nav-item">
+		        <a class="nav-link" href="#/medsestre">Medicinske sestre</a>
+		      </li>
+		      <li class="nav-item">
 		        <a class="nav-link" href="#/sale">Sale</a>
 		      </li>
 		      <li class="nav-item">
@@ -44,6 +47,10 @@ Vue.component('izvestaji', {
 		      <li class="nav-item">
 		        <a class="nav-link" href="#/zahtevioo">Zahtevi za odmor/odsustvo</a>
 		      </li>
+		      <li class="nav-item">
+		        <a class="nav-link" href="#/profiladmin">Profil: {{admin.ime}} {{admin.prezime}}</a>
+		      </li>
+		      
 		    </ul>
 		    <form class="form-inline my-2 my-lg-0">
 		      <!--input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"-->

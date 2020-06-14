@@ -10,6 +10,7 @@ Vue.component('predefpregledi', {
 			tipPregleda: {naziv: null},
 			showModal: false,
 			nemaRezultata: ""
+
 		}
 	},
 	
@@ -129,7 +130,7 @@ Vue.component('predefpregledi', {
 			 this.nemaRezultata = "";
 			 this.greska = "";
 				axios
-		       	.get('api/pregled/search/'+ this.datum + '/' + this.tipPregleda.naziv, { headers: { Authorization: 'Bearer ' + this.token }})
+		       	.get('api/pregled/search/'+ this.datum + '/' + this.tipPregleda.naziv +'/' + this.$route.params.name, { headers: { Authorization: 'Bearer ' + this.token }})
 		       	.then(res => {this.pregledi = res.data;
 		       		if(this.pregledi[0] == null){
 		       			this.nemaRezultata = "Nema rezultata pretrage";
@@ -157,13 +158,7 @@ Vue.component('predefpregledi', {
 		    	if (this.uloga != "ROLE_PACIJENT") {
 		    		router.push('/');
 		    	}else{
-		    		/*
-		    		axios
-		    		.get('api/pregled/all')
-		    		.then(res => {
-		    			this.pregledi = res.data;
-		    			*/
-		    		// pravicemo se da ovo radi, jer u bazi nema ni jednog predef pregleda, mrzelo me da pravim
+		    		
 		    		axios
 		    		.get('api/pregled/slobodniPregledi/'+this.$route.params.name,  { headers: { Authorization: 'Bearer ' + this.token }})
 		    		.then(res => {

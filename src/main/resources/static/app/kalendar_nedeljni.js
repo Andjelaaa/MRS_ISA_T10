@@ -36,7 +36,10 @@ Vue.component('calendar_ned', {
 		      
 		      <li class="nav-item">
 		         <a  class="nav-link" href="#/kalendarlekar">Radni kalendar</a>
-		      </li>
+			  </li>
+			    <li class="nav-item">
+		        <a  class="nav-link" href="#/lekar/pregledi">Zakazani pregledi</a>
+		       </li>
 		      <li class="nav-item">
 		        <a  class="nav-link" href="#/profil">Profil: {{korisnik.ime}} {{korisnik.prezime}}</a>
 		      </li>
@@ -366,8 +369,8 @@ Vue.component('calendar_ned', {
 		    	this.pocetak = this.korisnik.rvPocetak;
 		    	this.kraj=this.korisnik.rvKraj;
 		    	for(let i in this.korisnik.odsustvo){
-		   		 
-		    		if(this.korisnik.odsustvo[i].tip =="Odsustvo"){
+		   		   if(this.korisnik.odsustvo[i].status != 'zahtev'){
+						if(this.korisnik.odsustvo[i].tip =="Odsustvo"){
 		    			var pp = new Date(this.korisnik.odsustvo[i].pocetak);
 		    			var kk = new Date(this.korisnik.odsustvo[i].kraj);
 		    			while(pp<=kk){
@@ -386,7 +389,10 @@ Vue.component('calendar_ned', {
 		    				this.odmori.push(new Date(p));
 		    				p.setDate(p.getDate() + 1);
 		    			}
-		    					    			
+		    			
+
+					  }
+		    				    			
 		    		}	
 		    		
 		    		

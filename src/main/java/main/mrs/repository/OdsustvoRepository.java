@@ -95,6 +95,9 @@ public interface OdsustvoRepository  extends JpaRepository<Odsustvo, Long>{
 	@Query(value = "SELECT * FROM ODSUSTVO WHERE STATUS=0", nativeQuery = true)
 	List<Odsustvo> findAllZahtevi();
 
+	@Query(value = "SELECT * FROM ODSUSTVO WHERE LEKAR_ID = ?1 AND STATUS = 1", nativeQuery = true)
+	List<Odsustvo> findAllByIdLekar(Integer id);
+
 
 
 }

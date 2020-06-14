@@ -146,7 +146,7 @@ public class OdsustvoController {
 		
 		o.setStatus(Status.odobreno);
 		
-		if(o.getLekar().getIme() == null) {
+		if(o.getLekar()== null) {
 			// mejl sestri
 			EmailService.posaljiOdobrenoOdsustvo(o.getSestra().getEmail(), o);
 		}
@@ -172,8 +172,8 @@ public class OdsustvoController {
 		
 		o.setStatus(Status.odbijeno);
 		
-		if(o.getLekar().getIme() == null) {
-			// mejl sestri
+		if(o.getLekar() == null) {
+			System.out.println(o.getSestra().getEmail()+"DASssds");
 			EmailService.posaljiOdbijenoOdsustvo(o.getSestra().getEmail(), o, obrazlozenje);
 		}
 		else {

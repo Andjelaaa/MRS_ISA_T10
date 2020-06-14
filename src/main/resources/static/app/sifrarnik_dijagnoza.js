@@ -50,7 +50,7 @@ Vue.component('sifrarnik2', {
 
 		
 		<div class="float-left">
-		<h1>Sifrarnik sijagnoza </h1>
+		<h1>Sifrarnik dijagnoza </h1>
 		<table class="table table-hover table-light" >
 		   <tr>		   		
 		   		<th>Naziv</th>

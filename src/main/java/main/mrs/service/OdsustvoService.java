@@ -49,6 +49,10 @@ public class OdsustvoService {
 	public List<Odsustvo> findAllZahtevi() {
 		return OdsustvoRepository.findAllZahtevi();
 	}
+
+	public List<Odsustvo> findAllByIdLekar(Integer id) {
+		return OdsustvoRepository.findAllByIdLekar(id);
+	}
 	
 
 	

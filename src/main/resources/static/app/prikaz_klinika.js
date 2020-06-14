@@ -50,9 +50,10 @@ Vue.component('klinike-prikaz', {
 		  </div>
 		</nav>
 		</br>
-		<p class="leva">Sve klinike</p>
-		<p class="desna">Pretraga termina</p>
+		
+		
 		<div class="float-left">
+		<h1 >Sve klinike</h1>
 		<table class="table table-hover table-light">
 			<tr>
 			<th @click="sort('naziv')" class="class1">Naziv klinike</th>
@@ -74,6 +75,7 @@ Vue.component('klinike-prikaz', {
 		</table>
 		</div>
 		<div class="float-right" style="width:45%">
+		<h1>Pretraga termina</h1>
 		<table class="table table-hover table-light">
 			<tr>
 				<td>Pretrazi preglede od: </td>

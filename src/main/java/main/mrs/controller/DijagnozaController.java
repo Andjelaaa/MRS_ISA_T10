@@ -41,7 +41,7 @@ public class DijagnozaController {
 	
 
 	@GetMapping(value = "/all")
-	@PreAuthorize("hasAnyRole('ADMIN_KLINICKOG_CENTRA', 'LEKAR')")
+	@PreAuthorize("hasAnyRole('ADMIN_KLINICKOG_CENTRA', 'LEKAR', 'MED_SESTRA')")
 	public ResponseEntity<List<DijagnozaDTO>> getAllDijagnoze() {
 
 		List<Dijagnoza> dijagnoze = DijagnozaService.findAll();

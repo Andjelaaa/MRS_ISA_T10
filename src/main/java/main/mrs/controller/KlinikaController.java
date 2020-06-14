@@ -88,7 +88,7 @@ public class KlinikaController {
 	
 	
 	@GetMapping(value = "/slobodnitermini/lekari/{datum}/{tipPregleda}")
-	@PreAuthorize("hasRole('ROLE_PACIJENT')")
+	@PreAuthorize("hasRole('PACIJENT')")
 	public ResponseEntity<List<PomocnaKlasa5>> LekariSlobodniTermini(@PathVariable String datum, @PathVariable String tipPregleda) {
 		System.out.println("TRAZIM TERMINE SLOBODNE");
 		TipPregleda tp = TipPregledaService.findByNaziv(tipPregleda);

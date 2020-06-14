@@ -108,6 +108,7 @@ public class PregledController {
 	}
 
 	@PostMapping(value = "/ocene")
+	@PreAuthorize("hasRole('PACIJENT')")
 	public ResponseEntity<Ocene> dobaviOcene(@RequestBody PregledDTO data) {
 		Ocene ocene = new Ocene(); // podesi ocene na 0, ako je 0 onda nije ni ocenjeno
 
@@ -120,7 +121,8 @@ public class PregledController {
 		int lekarId = data.getLekar().getId();
 		OcenaLekar ocenaLekara = OcenaLekarService.findOcenu(lekarId, pacijentId);
 		OcenaKlinika ocenaKlinike = OcenaKlinikaService.findOcenu(klinikaId, pacijentId);
-
+      
+       
 		if (ocenaLekara != null) {
 			ocene.ocenaLekar = ocenaLekara.getOcena();
 		}
@@ -143,6 +145,7 @@ public class PregledController {
 			PregledDTO pregled = new PregledDTO(s);
 			pregled.getTipPregleda().getStavka().setCena(s.getTipPregleda().getStavka().getCena());
 			pregled.setPopust(s.getPopust());
+			pregled.setSala(new SalaDTO());
 			pregled.getSala().setBroj(s.getSala().getBroj());
 			PregledsDTO.add(pregled);
 		}
@@ -248,7 +251,7 @@ public class PregledController {
 		return new ResponseEntity<>(PregledsDTO, HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/otkazi/{pregledId}/{pacijentId}")
+	@GetMapping(value = "/otkazi/{pregledId}/{pacijentId}")
 	@PreAuthorize("hasAnyRole('LEKAR', 'PACIJENT')")
 	public ResponseEntity<PregledDTO> otkaziPregled(@PathVariable long pregledId, @PathVariable int pacijentId) {
 		Pregled p = PregledService.findById(pregledId);
@@ -278,8 +281,9 @@ public class PregledController {
 
 		List<PregledDTO> preglediDTO = new ArrayList<>();
 		for (Pregled s : pregledi) {
-			if (s.getStatus() == Status.odobreno)
-				preglediDTO.add(new PregledDTO(s));
+			if (s.getStatus() == Status.odobreno || s.getStatus() == Status.zavrseno )
+				if(s.getPacijent()!= null)
+					preglediDTO.add(new PregledDTO(s));
 		}
 		return new ResponseEntity<>(preglediDTO, HttpStatus.OK);
 	}
@@ -361,9 +365,9 @@ public class PregledController {
 		return new ResponseEntity<>(preglediDTO, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/search/{datum}/{tipPregledaNaziv}")
+	@GetMapping(value = "/search/{datum}/{tipPregledaNaziv}/{klinika_id}")
 	@PreAuthorize("hasRole('ROLE_PACIJENT')")
-	public ResponseEntity<List<PregledDTO>> pretragaDatumTip(@PathVariable String datum, @PathVariable String tipPregledaNaziv) {
+	public ResponseEntity<List<PregledDTO>> pretragaDatumTip(@PathVariable String datum, @PathVariable String tipPregledaNaziv, @PathVariable Integer klinika_id) {
 		TipPregleda tip = TipPregledaService.findByNaziv(tipPregledaNaziv);
 		Date date1 = null;
 		try {
@@ -375,8 +379,12 @@ public class PregledController {
 		}
 		System.out.println(date1);
 		List<Pregled> result = PregledService.findAfterDateType(date1, tip.getId());
+		
 		List<PregledDTO> preglediDTO = new ArrayList<>();
 		for (Pregled s : result) {
+			if(s.getLekar().getKlinika().getId() != klinika_id) {
+				continue;
+			}
 			PregledDTO pregled = new PregledDTO(s);
 			pregled.getTipPregleda().getStavka().setCena(s.getTipPregleda().getStavka().getCena());
 			pregled.setPopust(s.getPopust());

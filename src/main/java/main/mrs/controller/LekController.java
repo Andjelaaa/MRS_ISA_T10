@@ -40,7 +40,7 @@ public class LekController {
 	
 
 	@GetMapping(value = "/all")
-	@PreAuthorize("hasAnyRole('ADMIN_KLINICKOG_CENTRA', 'LEKAR')")
+	@PreAuthorize("hasAnyRole('ADMIN_KLINICKOG_CENTRA', 'LEKAR', 'MED_SESTRA')")
 	public ResponseEntity<List<LekDTO>> getAllLekove() {
 			
 		List<Lek> lekovi = LekService.findAll();

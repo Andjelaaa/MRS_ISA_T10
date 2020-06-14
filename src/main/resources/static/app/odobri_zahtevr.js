@@ -5,7 +5,9 @@ Vue.component('odobri_zaht', {
 			zahtevi:{},
 			greska:'',
 			opis:'',
-			showModal: false
+			showModal: false,
+			globInd: '',
+			globZahtev:''
 		}
 	}, 
 	
@@ -71,7 +73,7 @@ Vue.component('odobri_zaht', {
 		   		<td>{{z.lbo}}</td>
 		   		<td>{{z.lozinka}}</td>
 		   		<td><button v-on:click = "prihvati(ind, z)" class="btn btn-success">Prihvati</button></td>
-		   		<td><button class="btn btn-danger" id="show-modal" @click="showModal = true" >Odbij zahtev</button>
+		   		<td><button class="btn btn-danger" id="show-modal" v-on:click="sacuvaj(z, ind)" @click="showModal = true" >Odbij zahtev</button>
 						<modal v-if="showModal" @close="showModal = false">
 	    
 	    					<h3 slot="header">Unesite razlog odbijanja registracije</h3>
@@ -84,7 +86,7 @@ Vue.component('odobri_zaht', {
 							</table>
 	    					
 	    					<div slot="footer">
-	    						<button @click="showModal=false" style="margin:5px;" class="btn btn-success" v-on:click="save(ind, z)"> Ukloni zahtev </button>       						
+	    						<button @click="showModal=false" style="margin:5px;" class="btn btn-success" v-on:click="save()"> Ukloni zahtev </button>       						
 								<button style="margin:5px;" class="btn btn-secondary" @click="showModal=false" v-on:click="restore()"> Odustani </button>								
 							</div>
 						</modal>
@@ -97,6 +99,10 @@ Vue.component('odobri_zaht', {
 	
 	`, 
 	methods : {
+		sacuvaj:function(zahtev,index ){
+              this.globInd= index,
+			 this. globZahtev =zahtev;
+		},
 		odjava : function(){
 			localStorage.removeItem("token");
 			this.$router.push('/');
@@ -116,6 +122,8 @@ Vue.component('odobri_zaht', {
 				alert("Poslat email");
 			}).catch((response)=>{
 				this.greska = 'Email nije poslat';
+				this.odbij(ind, zahtev);
+				alert("Email vec zauzet");
 			}
 				
 			);
@@ -127,6 +135,7 @@ Vue.component('odobri_zaht', {
 			.post('api/adminkc/denied/', {user: zahtevBrisi, opis: this.opis},{ headers: { Authorization: 'Bearer ' + this.token }})
 			.then((response)=>{
 				this.greska='';
+				console.log(ind + "dasdadsdsadssadsad");
 				this.zahtevi.splice(ind, 1);
 				alert("Poslat email");
 				
@@ -142,13 +151,13 @@ Vue.component('odobri_zaht', {
 			this.index ='';
 
 		},
-		save:function(ind, z){
+		save:function(){
 			if(!this.opis){
 				alert("Opis ne moze biti prazan");
 				
 			}			    
 			else{
-				this.odbij(ind, z);
+				this.odbij(this.globInd, this.globZahtev);
 				
 			}
 			

@@ -12,7 +12,9 @@ Vue.component('zakazisalu', {
 			pretragaSale: [],
 			pretragaZauzeca: [],
 			pretragaPrviSlobodni: [],
-			searchparam:''
+			searchparam:'',
+			greskaDatum:'',
+			salePomoc:[]
 			
 		}
 	}, 
@@ -64,6 +66,7 @@ Vue.component('zakazisalu', {
 			<h3> Slobodne sale </h3> <h3 v-if="!noviDatum">{{prviSlobodni[0] | formatDate}}</h3>
 		<input type='date' v-model='noviDatum'>
 		<button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="nadjiZaDatum()">Nadji</button>
+		{{greskaDatum}}
 		<br>
 		<input type='text' v-model='searchparam' placeholder='Naziv ili broj sale'>
 		<button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="pretraga()">Pretrazi</button>
@@ -110,37 +113,85 @@ Vue.component('zakazisalu', {
 
 			
 		},
+		 validateDate: function() {
+		        
+    			if (new Date(this.noviDatum).valueOf() < new Date().valueOf()) {
+       				  this.validator = false; //date is before today's date
+   				} else {
+					 this.validator = true; //date is today or some day forward
+				}
+		},
+		dFormat: function(date) {
+	        var d = new Date(date),
+	            month = '' + (d.getMonth() + 1),
+	            day = '' + d.getDate(),
+	            year = d.getFullYear();
+
+	        if (month.length < 2) 
+	            month = '0' + month;
+	        if (day.length < 2) 
+	            day = '0' + day;
+
+	        return [year, month, day].join('-');
+	    },
 		nadjiZaDatum: function(){
+			this.greskaDatum ='';
 			if(!this.noviDatum){
+				this.greskaDatum ='Niste uneli datum.';
 				return;
 			}
-				
-			axios
-	      	.get('api/sala/all/'+this.admin.id, { headers: { Authorization: 'Bearer ' + this.token }})
-	      	.then(response => {
-	      		this.sale = response.data;
-	      		this.pretragaSale = response.data;
-	      		this.zauzeca = [];
-	      		this.prviSlobodni = [];
-	      		this.pretragaZauzeca = [];
-	      		this.pretragaPrviSlobodni = [];
-	      		for(var s of this.sale){
-	      			console.log(s.id);
-	      			axios
-			      	.get('api/sala/prvislobodan/'+this.noviDatum+'/'+s.id+'/'+this.$route.params.id, { headers: { Authorization: 'Bearer ' + this.token }})
-			      	.then(response => {			      		
-			      		this.retVal = response.data;
-			      		this.zauzeca.push(this.retVal.zauzeca);
-			      		this.prviSlobodni.push(this.retVal.prviSlobodan);
-			      		this.pretragaZauzeca.push(this.retVal.zauzeca);
-			      		this.pretragaPrviSlobodni.push(this.retVal.prviSlobodan);
-			      		
-			      	})
-			        .catch(function (error) { console.log('Greska11'); alert('Datum je u proslosti!'); });	
-	      			
-	      		}
-	      	})
-	        .catch(function (error) { console.log('Greska22') });		
+		    else{
+				this.validateDate();
+			    if(!this.validator){
+				  this.greskaDatum ='Niste uneli validan datum.';
+				  return;
+				}
+				else{
+					axios
+					.get('api/sala/all/'+this.admin.id, { headers: { Authorization: 'Bearer ' + this.token }})
+					.then(response => {
+						this.sale = [];
+						this.zauzeca = [];
+						this.prviSlobodni = [];
+						this.pretragaZauzeca = [];
+						this.pretragaPrviSlobodni = [];
+						this.pretragaSale = [];
+						this.salePomoc = response.data;
+
+						for(let s of this.salePomoc){
+							console.log(s.id);
+							axios
+							.get('api/sala/prvislobodan/'+this.dFormat(this.noviDatum)+'/'+s.id+'/'+this.$route.params.id, { headers: { Authorization: 'Bearer ' + this.token }})
+							.then(response => {			      		
+								this.retVal = response.data;
+								this.zauzeca.push(this.retVal.zauzeca);
+								this.prviSlobodni.push(this.retVal.prviSlobodan);
+								this.pretragaZauzeca.push(this.retVal.zauzeca);
+								this.pretragaPrviSlobodni.push(this.retVal.prviSlobodan);
+								this.pretragaSale.push(s);
+								
+							})
+							.catch(function (error) { console.log('Greska11');  });	
+							
+						}
+					})
+					.catch(function (error) { console.log('Greska22') });		
+			
+
+
+
+
+
+				}
+
+
+
+
+
+
+
+
+			}
 			
 		},
 		pretraga: function(){

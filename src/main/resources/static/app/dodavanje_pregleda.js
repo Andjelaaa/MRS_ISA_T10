@@ -45,7 +45,7 @@ Vue.component('dpregled', {
 		      <li class="nav-item">
 		        <a class="nav-link" href="#/tipovipregleda">Tipovi pregleda</a>
 		      </li>
-		      <li class="nav-item active">
+		      <li class="nav-item">
 		        <a class="nav-link" href="#/dpregled">Novi termin za pregled</a>
 		      </li>
 		      <li class="nav-item">
@@ -57,8 +57,13 @@ Vue.component('dpregled', {
 		      <li class="nav-item">
 		        <a class="nav-link" href="#/zahtevioo">Zahtevi za odmor/odsustvo</a>
 		      </li>
+		      <li class="nav-item">
+		        <a class="nav-link" href="#/profiladmin">Profil: {{admin.ime}} {{admin.prezime}}</a>
+		      </li>
+		      
 		    </ul>
 		    <form class="form-inline my-2 my-lg-0">
+		      <!--input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"-->
 		      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="odjava()">Odjavi se</button>
 		    </form>
 		  </div>

@@ -99,7 +99,7 @@ public interface OperacijaRepository  extends JpaRepository<Operacija, Long>{
 	@Query(value = "SELECT * FROM OPERACIJA WHERE SALA_ID = ?1", nativeQuery = true)
 	List<Operacija> findAllBySalaId(Integer id);
 
-	@Query(value = "SELECT * FROM OPERACIJA WHERE PACIJENT_ID = ?1 AND (STATUS = 0 OR STATUS = 1)" , nativeQuery = true)
+	@Query(value = "SELECT * FROM OPERACIJA WHERE PACIJENT_ID = ?1 AND (STATUS = 3 OR STATUS = 1)" , nativeQuery = true)
 	List<Operacija> getScheduled(Integer id);
 
 	@Query(value = "SELECT * FROM OPERACIJA WHERE PACIJENT_ID = ?1 AND STATUS = 4" , nativeQuery = true)

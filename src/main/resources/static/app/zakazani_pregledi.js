@@ -8,6 +8,7 @@ Vue.component('zakazani-pregledi', {
 			idPacijenta: 1,
 			pacijent: {},
 			uloga: '',
+			lekarId: 0,
 			ocene: {ocenaLekar: 0, ocenaKlinika: 0},
 			oceneBackup: {ocenaLekar: 0, ocenaKlinika: 0},
 			showModal: false,
@@ -178,8 +179,7 @@ Vue.component('zakazani-pregledi', {
 			<tr v-for="(o, index) in sortedIstorijaOperacija">
 				<td>{{o.datumVreme | formatDate}}</td>
 				<td>{{o.trajanje}}</td>
-				<td v-for="l in o.lekar> {{l.ime}} {{l.prezime}} </td>
-				<td>broj sale</td>
+				<td v-for="l in o.lekar"> {{l.ime}} {{l.prezime}} </td>
 				<td v-if="o.sala.broj != null">{{o.sala.broj}}</td>
 				<td v-if="o.sala.broj == null">/</td>
 				<td></td>
@@ -194,7 +194,7 @@ Vue.component('zakazani-pregledi', {
 		otkazi : function(pregledId, i){
 			// upit da li je siguran - prozor sa informacijama
 			axios
-	          .post('api/pregled/otkazi/'+pregledId+'/'+this.pacijent.id,  { headers: { Authorization: 'Bearer ' + this.token }})
+	          .get('api/pregled/otkazi/'+pregledId+'/'+this.pacijent.id,  { headers: { Authorization: 'Bearer ' + this.token }})
 	          .then(res => {
 	        	this.pregledi.splice(i,1);
 	        	console.log('uspesno');
@@ -226,8 +226,9 @@ Vue.component('zakazani-pregledi', {
 		select: function(p)
 		{
 			// odmah podesi backup
+			this.lekarId = p.lekar.id;
 			axios
-			.post('api/pregled/ocene', p)
+			.post('api/pregled/ocene', p, { headers: { Authorization: 'Bearer ' + this.token }})
 			.then(res=>{
 				this.ocene = res.data;
 				this.oceneBackup.ocenaLekar = this.ocene.ocenaLekar;
@@ -239,22 +240,20 @@ Vue.component('zakazani-pregledi', {
 		{
 			// ceo pregled iz njega mi treba id klinike i ili id lekara ako je potvrdio ocenu
 			// this.ocene;
+			
 			if(this.ocene.ocenaKlinika != this.oceneBackup.ocenaKlinika)
 			{
-				// oceni kliniku
-				//.post('api/ocenaklinika/oceni/'+ p.lekar.klinika.id + '/' + this.idPacijenta + '/' + this.ocene.ocenaKlinika)
 				axios
-				//.post('api/ocenaklinika/oceni/1/' + this.idPacijenta + '/' + this.ocene.ocenaKlinika)
-				.get('api/ocenaklinika/oceni/'+ p.lekar.id  + '/' + this.ocene.ocenaKlinika, { headers: { Authorization: 'Bearer ' + this.token }})
+				.get('api/ocenaklinika/oceni/'+ this.lekarId  + '/' + this.ocene.ocenaKlinika, { headers: { Authorization: 'Bearer ' + this.token }})
 				.then(res=>{
 					
 				})
 			}
 			if(this.ocene.ocenaLekar != this.oceneBackup.ocenaLekar)
 			{
-				// oceni lekara
+				
 				axios
-				.get('api/ocenalekar/oceni/'+ p.lekar.id +'/'+this.ocene.ocenaLekar,  { headers: { Authorization: 'Bearer ' + this.token }})
+				.get('api/ocenalekar/oceni/'+ this.lekarId +'/'+this.ocene.ocenaLekar,  { headers: { Authorization: 'Bearer ' + this.token }})
 				.then(res=>{
 					
 				})

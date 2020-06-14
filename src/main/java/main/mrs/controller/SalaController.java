@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,15 +26,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import main.mrs.dto.PregledDTO;
 import main.mrs.dto.SalaDTO;
 import main.mrs.dto.ZauzecaSlobodniDTO;
 import main.mrs.dto.ZauzeceDTO;
 import main.mrs.model.AdminKlinike;
+import main.mrs.model.Lekar;
+import main.mrs.model.Odsustvo;
 import main.mrs.model.Operacija;
 import main.mrs.model.Pregled;
 import main.mrs.model.Sala;
 import main.mrs.service.AdminKlinikeService;
+import main.mrs.service.LekarService;
+import main.mrs.service.OdsustvoService;
 import main.mrs.service.OperacijaService;
 import main.mrs.service.PregledService;
 import main.mrs.service.SalaService;
@@ -47,7 +52,11 @@ public class SalaController {
 	@Autowired
 	private PregledService PregledService;
 	
-	
+
+	@Autowired
+	private OdsustvoService OdsustvoService;
+	@Autowired
+	private LekarService LekarService;
 	@Autowired
 	private OperacijaService OperacijaService;
 	@Autowired
@@ -286,17 +295,39 @@ public class SalaController {
 		List<Operacija> operacije = OperacijaService.findAll();
 		Date datum = null;
 		try {
-			datum = sdf.parse(datumStr);
+			datum = new SimpleDateFormat("yyyy-MM-dd").parse(datumStr);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		// ne sme rezervisati za proslost
-		if(datum.before(new Date()))
-			return new ResponseEntity<>(new ZauzecaSlobodniDTO(), HttpStatus.BAD_REQUEST);
-		
 		List<ZauzeceDTO> zauzecaDTO = new ArrayList<ZauzeceDTO>();
+		
+		
+		Lekar l = pregled.getLekar();
+		List<Odsustvo> odsustva = OdsustvoService.findAllByIdLekar(l.getId());
+		if(!odsustva.isEmpty()) {
+			for(Odsustvo i: odsustva) {
+				Date pocetak =null;
+				Date kraj =null;
+				try {
+					 pocetak = new SimpleDateFormat("yyyy-MM-dd").parse(i.getPocetak().toString());
+					 kraj = new SimpleDateFormat("yyyy-MM-dd").parse(i.getKraj().toString());
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if((pocetak.before(datum) ||pocetak.equals(datum)) &&
+						(kraj.after(datum) ||kraj.equals(datum))) {
+					
+					return new ResponseEntity<>(new ZauzecaSlobodniDTO(), HttpStatus.BAD_REQUEST);
+					
+				}
+				
+			}
+		}
+		
+		
 		final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
 		for(Pregled p: Pregleds) {
 			if(p.getSala() != null) {
@@ -330,7 +361,7 @@ public class SalaController {
         });		
 		
 		Date prviSlobodan = datum;
-		prviSlobodan.setHours(pregled.getDatumVreme().getHours()-2);
+		prviSlobodan.setHours(pregled.getDatumVreme().getHours());
 		prviSlobodan.setMinutes(pregled.getDatumVreme().getMinutes());
 		if(!zauzecaDTO.isEmpty()) {
 			prviSlobodan = zauzecaDTO.get(0).getKraj();
@@ -343,7 +374,7 @@ public class SalaController {
 		}		
 		ZauzecaSlobodniDTO retVal = new ZauzecaSlobodniDTO();
 		retVal.setZauzeca(zauzecaDTO);
-		prviSlobodan.setHours(prviSlobodan.getHours()+2);
+		prviSlobodan.setHours(prviSlobodan.getHours());
 		retVal.setPrviSlobodan(prviSlobodan);
 
 		return new ResponseEntity<>(retVal, HttpStatus.OK);
@@ -448,7 +479,8 @@ public class SalaController {
 	@SuppressWarnings("deprecation")
 	@GetMapping(value = "/prvislobodanop/{datumStr}/{idSale}/{idOperacije}")
 	@PreAuthorize("hasRole('ADMIN_KLINIKE')")
-	public ResponseEntity<ZauzecaSlobodniDTO> getZauzecaZaDatumOP(@PathVariable String datumStr, @PathVariable Integer idSale,
+	public ResponseEntity<ZauzecaSlobodniDTO> getZauzecaZaDatumOP(@PathVariable String datumStr, 
+			@PathVariable Integer idSale,
 			@PathVariable Integer idOperacije) {
 		sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Operacija operacija = OperacijaService.findOne(idOperacije);
@@ -456,18 +488,43 @@ public class SalaController {
 		List<Pregled> Pregleds = PregledService.findAll();
 		List<Operacija> operacije = OperacijaService.findAll();
 		Date datum = null;
+		Date prviSlobodan = null;
 		try {
-			datum = sdf.parse(datumStr);
+			datum = new SimpleDateFormat("yyyy-MM-dd").parse(datumStr);
+			prviSlobodan = datum;
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
-				
-		// ne sme rezervisati za proslost
-		if(datum.before(new Date()))
-			return new ResponseEntity<>(new ZauzecaSlobodniDTO(), HttpStatus.BAD_REQUEST);
 		
 		List<ZauzeceDTO> zauzecaDTO = new ArrayList<ZauzeceDTO>();
+		//gledaj odsustva i odmore
+		Set<Lekar> l = operacija.getLekar();
+        Lekar lekkkar = l.iterator().next();
+		List<Odsustvo> odsustva = OdsustvoService.findAllByIdLekar(lekkkar.getId());
+		if(!odsustva.isEmpty()) {
+			for(Odsustvo i: odsustva) {
+				Date pocetak =null;
+				Date kraj =null;
+				try {
+					 pocetak = new SimpleDateFormat("yyyy-MM-dd").parse(i.getPocetak().toString());
+					 kraj = new SimpleDateFormat("yyyy-MM-dd").parse(i.getKraj().toString());
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if((pocetak.before(datum) ||pocetak.equals(datum)) &&
+						(kraj.after(datum) ||kraj.equals(datum))) {
+					
+					return new ResponseEntity<>(new ZauzecaSlobodniDTO(), HttpStatus.BAD_REQUEST);
+					
+				}
+				
+			}
+		}
+		
+		
+		
 		final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
 		for(Pregled p: Pregleds) {
 			if(p.getSala() != null) {
@@ -500,9 +557,10 @@ public class SalaController {
 			}         
         });		
 		
-		Date prviSlobodan = datum;
-		prviSlobodan.setHours(operacija.getDatumVreme().getHours()-2);
+		prviSlobodan.setHours(operacija.getDatumVreme().getHours());
 		prviSlobodan.setMinutes(operacija.getDatumVreme().getMinutes());
+		//prviSlobodan.setYear(operacija.getDatumVreme().getYear());
+		
 		if(!zauzecaDTO.isEmpty()) {
 			prviSlobodan = zauzecaDTO.get(0).getKraj();
 			for (int i = 0; i<zauzecaDTO.size()-1;i++) {
@@ -514,7 +572,7 @@ public class SalaController {
 		}		
 		ZauzecaSlobodniDTO retVal = new ZauzecaSlobodniDTO();
 		retVal.setZauzeca(zauzecaDTO);
-		prviSlobodan.setHours(prviSlobodan.getHours()+2);
+		prviSlobodan.setHours(prviSlobodan.getHours());
 		retVal.setPrviSlobodan(prviSlobodan);
 
 		return new ResponseEntity<>(retVal, HttpStatus.OK);

@@ -39,14 +39,18 @@ Vue.component('zahtevioo', {
 		        <a class="nav-link" href="#/dpregled">Novi termin za pregled</a>
 		      </li>
 		      <li class="nav-item">
-		        <a class="nav-link " href="#/izvestaji">Izvestaji</a>
+		        <a class="nav-link" href="#/izvestaji">Izvestaji</a>
 		      </li>
 		      <li class="nav-item">
-		        <a class="nav-link " href="#/zahtevipo">Zahtevi za pregled/operaciju</a>
+		        <a class="nav-link" href="#/zahtevipo">Zahtevi za pregled/operaciju</a>
 		      </li>
 		      <li class="nav-item">
 		        <a class="nav-link active" href="#/zahtevioo">Zahtevi za odmor/odsustvo</a>
 		      </li>
+		      <li class="nav-item">
+		        <a class="nav-link" href="#/profiladmin">Profil: {{admin.ime}} {{admin.prezime}}</a>
+		      </li>
+		      
 		    </ul>
 		    <form class="form-inline my-2 my-lg-0">
 		      <!--input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"-->
@@ -71,7 +75,7 @@ Vue.component('zahtevioo', {
 			<tbody>
 			
 			   <tr v-for="z in zahtevi">			   		
-			   		<td v-if="z.lekar == null">{{z.medSestra.ime}} {{z.medSestra.prezime}}</td>
+			   		<td v-if="z.lekar == null">{{z.sestra.ime}} {{z.sestra.prezime}}</td>
 			   		<td v-else>{{z.lekar.ime}} {{z.lekar.prezime}}</td>
 			   		<td>{{z.tip}}</td>
 			   		<td>{{z.pocetak | formatDate}}</td>

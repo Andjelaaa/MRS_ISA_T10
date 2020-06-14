@@ -97,7 +97,7 @@ Vue.component('admin', {
 			   		<button class="btn btn-light float-right" id="show-modal" @click="showModal = true" v-on:click="select()">Izmeni</button>
 						<modal v-if="showModal" @close="showModal = false">
         
-        					<h3 slot="header">Izmena sale</h3>
+        					<h3 slot="header">Izmena klinike</h3>
         					<table slot="body" >
 								<tbody>
 										

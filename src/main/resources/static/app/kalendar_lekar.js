@@ -375,28 +375,29 @@ Vue.component('calendar_doc', {
 		    	
 		    	
 		    	for(let i in this.korisnik.odsustvo){
-		 
-		    		if(this.korisnik.odsustvo[i].tip =="Odsustvo"){
-		    			var pp = new Date(this.korisnik.odsustvo[i].pocetak);
-		    			var kk = new Date(this.korisnik.odsustvo[i].kraj);
-		    			while(pp<=kk){
-		    				this.odsustva.push(new Date(pp));
-		    				pp.setDate(pp.getDate() + 1);
-		    				
-		    			}
-		    			
-		    			
-		    		}
-		    		else{
+		          if(this.korisnik.odsustvo[i].status != 'zahtev'){
+						if(this.korisnik.odsustvo[i].tip =="Odsustvo"){
+							var pp = new Date(this.korisnik.odsustvo[i].pocetak);
+							var kk = new Date(this.korisnik.odsustvo[i].kraj);
+							while(pp<=kk){
+								this.odsustva.push(new Date(pp));
+								pp.setDate(pp.getDate() + 1);
+								
+							}
+							
+							
+						}
+						else{
 
-		    			var p = new Date(this.korisnik.odsustvo[i].pocetak);
-		    			var k =new Date(this.korisnik.odsustvo[i].kraj);	
-		    			while(p<=k){
-		    				this.odmori.push(new Date(p));
-		    				p.setDate(p.getDate() + 1);
-		    			}
-		    					    			
-		    		}	
+							var p = new Date(this.korisnik.odsustvo[i].pocetak);
+							var k =new Date(this.korisnik.odsustvo[i].kraj);	
+							while(p<=k){
+								this.odmori.push(new Date(p));
+								p.setDate(p.getDate() + 1);
+							}
+													
+						}
+				  }	
 		    		
 		    		
 		    	}

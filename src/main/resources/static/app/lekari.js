@@ -34,8 +34,8 @@ Vue.component('lekari', {
 		
 		  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
 		    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-		      <li class="nav-item active">
-		        <a class="nav-link" href="#/lekari">Lekari</a>
+		      <li class="nav-item">
+		        <a class="nav-link active" href="#/lekari">Lekari</a>
 		      </li>
 		      <li class="nav-item">
 		        <a class="nav-link" href="#/medsestre">Medicinske sestre</a>
@@ -58,8 +58,13 @@ Vue.component('lekari', {
 		      <li class="nav-item">
 		        <a class="nav-link" href="#/zahtevioo">Zahtevi za odmor/odsustvo</a>
 		      </li>
+		      <li class="nav-item">
+		        <a class="nav-link" href="#/profiladmin">Profil: {{admin.ime}} {{admin.prezime}}</a>
+		      </li>
+		      
 		    </ul>
 		    <form class="form-inline my-2 my-lg-0">
+		      <!--input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"-->
 		      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="odjava()">Odjavi se</button>
 		    </form>
 		  </div>
@@ -200,12 +205,10 @@ Vue.component('lekari', {
 			.then((res)=>{
 				console.log('uspesno');
 				this.lekari.splice(i,1);
-//				console.log(this.token+ '  skfjfkfj');
-//				axios
-//    	       	.get('api/lekar/all/'+this.admin.id, { headers: { Authorization: 'Bearer ' + this.token }})
-//    	       	.then(response => (this.lekari = response.data));
+				alert("Uspesno brisanje");
 			}).catch((res)=>{
 				console.log('Neuspesno brisanje');
+				alert("Neuspesno brisanje");
 			});
 			
 		},
@@ -244,7 +247,20 @@ Vue.component('lekari', {
 				this.krajGreska = 'Ovo je obavezno polje!';
 			if(!this.lekar.tipPregleda)
 				this.specijalizacijaGreska = 'Specijalizacija je obavezno polje!';
-
+			
+			if(/[0-9]{2,2}:[0-9]{2,2}/.test(this.lekar.rvPocetak) == false)
+	        {
+				this.pocGreska = 'Los format!';
+                return 1;
+				
+			}
+			
+			if(/[0-9]{2,2}:[0-9]{2,2}/.test(this.lekar.rvKraj) == false)
+			{
+				this.krajGreska = 'Los format!';
+                return 1;
+				
+			}
 			if(this.lekar.email && this.lekar.ime && this.lekar.prezime && this.lekar.lozinka && this.lekar.adresa && this.lekar.grad && this.lekar.drzava && this.lekar.tipPregleda
 					&& this.lekar.rvPocetak && this.lekar.rvKraj && this.lekar.kontakt){
 				return 0;
@@ -261,8 +277,7 @@ Vue.component('lekari', {
 			axios
 			.post('api/lekar/'+this.admin.id, this.lekar, { headers: { Authorization: 'Bearer ' + this.token }})
 			.then((res)=>{
-				console.log('uspesno');
-				console.log('ajskf  '+this.token)
+				
 				axios
 		       	.get('api/lekar/all/'+this.admin.id, { headers: { Authorization: 'Bearer ' + this.token }})
 		       	.then(response => (this.lekari = response.data));

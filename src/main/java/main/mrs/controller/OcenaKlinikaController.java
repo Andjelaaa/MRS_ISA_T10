@@ -73,6 +73,7 @@ public class OcenaKlinikaController {
 		double prosecnaOcena = 0.0;
 		if(staraOcena != null)
 		{
+			
 			prosecnaOcena = (klinika.getProsecnaOcena()*klinika.getBrojOcena() - staraOcena.getOcena() + ocena) / klinika.getBrojOcena();
 			staraOcena.setOcena(ocena);
 			klinika.setProsecnaOcena(prosecnaOcena);
@@ -96,6 +97,7 @@ public class OcenaKlinikaController {
 			novaOcena.setKlinikaId(lekar.getKlinika().getId());
 			novaOcena.setPacijentId(p.getId());
 			novaOcena.setOcena(ocena);
+			System.out.println("NOVA ocena KLINIKE: " +  novaOcena.getOcena());
 			try {
 				novaOcena = OcenaKlinikaService.save(novaOcena);
 			}

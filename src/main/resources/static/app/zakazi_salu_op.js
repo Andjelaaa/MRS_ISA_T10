@@ -16,7 +16,11 @@ Vue.component('zakazisaluop', {
 			odabraniLekari:[],
 			showModal: false,
 			token:'',
-			uloga:''
+			uloga:'',
+			salePomoc:[],
+			greskaDatum:'',
+			validator:false
+
 		}
 	}, 
 	
@@ -67,6 +71,7 @@ Vue.component('zakazisaluop', {
 			<h3> Slobodne sale </h3> <h3 v-if="!noviDatum">{{prviSlobodni[0] | formatDate}}</h3>
 		<input type='date' v-model='noviDatum'>
 		<button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="nadjiZaDatum()">Nadji</button>
+		{{greskaDatum}}
 		<br>
 		<input type='text' v-model='searchparam' placeholder='Naziv ili broj sale'>
 		<button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="pretraga()">Pretrazi</button>
@@ -147,40 +152,77 @@ Vue.component('zakazisaluop', {
 	        .catch(function (error) { console.log('Greska') });	
 			
 		},
+	   validateDate: function() {
+		        
+    			if (new Date(this.noviDatum).valueOf() < new Date().valueOf()) {
+       				  this.validator = false; //date is before today's date
+   				} else {
+					 this.validator = true; //date is today or some day forward
+				}
+		},
+		dFormat: function(date) {
+	        var d = new Date(date),
+	            month = '' + (d.getMonth() + 1),
+	            day = '' + d.getDate(),
+	            year = d.getFullYear();
+
+	        if (month.length < 2) 
+	            month = '0' + month;
+	        if (day.length < 2) 
+	            day = '0' + day;
+
+	        return [year, month, day].join('-');
+	    },
 		nadjiZaDatum: function(){
-			console.log(this.noviDatum +"STA JE OVO")
-			if(this.noviDatum == null){
+		    this.greskaDatum ='';
+			if(!this.noviDatum){
+				this.greskaDatum ='Niste uneli datum.';
 				return;
 			}
 			else
 			{
-			axios
-	      	.get('api/sala/all',{ headers: { Authorization: 'Bearer ' + this.token }})
-	      	.then(response => {
-	      		this.sale = response.data;
-	      		this.pretragaSale = response.data;
-	      		this.zauzeca = [];
-	      		this.prviSlobodni = [];
-	      		this.pretragaZauzeca = [];
-	      		this.pretragaPrviSlobodni = [];
-	      		for(var s of this.sale){
-	      			console.log(s.id);
-	      			axios
-			      	.get('api/sala/prvislobodanop/'+this.noviDatum+'/'+s.id+'/'+this.$route.params.id,{ headers: { Authorization: 'Bearer ' + this.token }})
-			      	.then(response => {			      		
-			      		this.retVal = response.data;
-			      		this.zauzeca.push(this.retVal.zauzeca);
-			      		this.prviSlobodni.push(this.retVal.prviSlobodan);
-			      		this.pretragaZauzeca.push(this.retVal.zauzeca);
-			      		this.pretragaPrviSlobodni.push(this.retVal.prviSlobodan);
-			      		
-			      	})
-			        .catch(function (error) { console.log('Greska11') });	
-	      			
-	      		}
-	      	})
-	        .catch(function (error) { console.log('Greska22') });		
+			   this.validateDate();
+			   if(!this.validator){
+				  this.greskaDatum ='Niste uneli validan datum.';
+			      return;
+			   }else{
+				    //console.log(this.dFormat(this.noviDatum).toString()+"dsadaasd");
+					axios
+					.get('api/sala/all/'+this.admin.id,{ headers: { Authorization: 'Bearer ' + this.token }})
+					.then(response => {
+						this.sale = [];
+						this.zauzeca = [];
+						this.prviSlobodni = [];
+						this.pretragaZauzeca = [];
+						this.pretragaPrviSlobodni = [];
+						this.pretragaSale = [];
+						this.salePomoc = response.data;
+						for(let s of this.salePomoc){
+							console.log(s.id);
+							axios
+							.get('api/sala/prvislobodanop/'+this.dFormat(this.noviDatum)+'/'+s.id+'/'+this.$route.params.id,{ headers: { Authorization: 'Bearer ' + this.token }})
+							.then(response => {			      		
+								this.retVal = response.data;
+								this.zauzeca.push(this.retVal.zauzeca);
+								this.prviSlobodni.push(this.retVal.prviSlobodan);
+								this.pretragaZauzeca.push(this.retVal.zauzeca);
+								this.pretragaPrviSlobodni.push(this.retVal.prviSlobodan);
+								this.pretragaSale.push(s);
+							})
+							.catch(function (error) { 
+								console.log('Greska11');
+								
+							});	
+							
+						}
+						
+						
+					})
+					.catch(function (error) { console.log('Greska22') });	
+					}
+	
 		   }
+		
 		},
 		pretraga: function(){
 			this.pretragaSale = [];
@@ -212,7 +254,7 @@ Vue.component('zakazisaluop', {
 		
 	},
 	
-	created(){
+	mounted(){
 		this.token = localStorage.getItem("token");
 		axios
 		.get('/auth/dobaviUlogovanog', { headers: { Authorization: 'Bearer ' + this.token }} )

@@ -34,8 +34,8 @@ Vue.component('sale', {
 		      <li class="nav-item">
 		        <a class="nav-link" href="#/medsestre">Medicinske sestre</a>
 		      </li>
-		      <li class="nav-item active">
-		        <a class="nav-link" href="#/sale">Sale</a>
+		      <li class="nav-item">
+		        <a class="nav-link active" href="#/sale">Sale</a>
 		      </li>
 		      <li class="nav-item">
 		        <a class="nav-link" href="#/tipovipregleda">Tipovi pregleda</a>
@@ -52,8 +52,13 @@ Vue.component('sale', {
 		      <li class="nav-item">
 		        <a class="nav-link" href="#/zahtevioo">Zahtevi za odmor/odsustvo</a>
 		      </li>
+		      <li class="nav-item">
+		        <a class="nav-link" href="#/profiladmin">Profil: {{admin.ime}} {{admin.prezime}}</a>
+		      </li>
+		      
 		    </ul>
 		    <form class="form-inline my-2 my-lg-0">
+		      <!--input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"-->
 		      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="odjava()">Odjavi se</button>
 		    </form>
 		  </div>
@@ -145,7 +150,7 @@ Vue.component('sale', {
 		odjava : function(){
 			localStorage.removeItem("token");
 			this.$router.push('/');
-	},
+	    },
 
 		pretrazi: function(){
 			console.log(this.pretraga);
@@ -219,9 +224,14 @@ Vue.component('sale', {
 			.post('api/sala/'+this.admin.id, this.sala, { headers: { Authorization: 'Bearer ' + this.token }})
 			.then((res)=>{
 				console.log('uspesno');
+                this.sala ={};
+
+
 				axios
 		       	.get('api/sala/all/'+this.admin.id, { headers: { Authorization: 'Bearer ' + this.token }})
-		       	.then(response => (this.sale = response.data));
+				   .then(response => (this.sale = response.data));
+				   
+				
 			}).catch((res)=>{
 				this.error = 'Vec postoji sala sa istim brojem ili nazivom';
 			}

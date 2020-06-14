@@ -34,7 +34,7 @@ Vue.component('medsestre', {
 		      <li class="nav-item">
 		        <a class="nav-link" href="#/lekari">Lekari</a>
 		      </li>
-		      <li class="nav-item active">
+		      <li class="nav-item">
 		        <a class="nav-link" href="#/medsestre">Medicinske sestre</a>
 		      </li>
 		      <li class="nav-item">
@@ -55,8 +55,13 @@ Vue.component('medsestre', {
 		      <li class="nav-item">
 		        <a class="nav-link" href="#/zahtevioo">Zahtevi za odmor/odsustvo</a>
 		      </li>
+		      <li class="nav-item">
+		        <a class="nav-link" href="#/profiladmin">Profil: {{admin.ime}} {{admin.prezime}}</a>
+		      </li>
+		      
 		    </ul>
 		    <form class="form-inline my-2 my-lg-0">
+		      <!--input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"-->
 		      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" v-on:click="odjava()">Odjavi se</button>
 		    </form>
 		  </div>
@@ -184,11 +189,13 @@ Vue.component('medsestre', {
 			.delete('api/medsestraa/'+s.id, { headers: { Authorization: 'Bearer ' + this.token }})
 			.then((res)=>{
 				console.log('uspesno');
+				alert("Uspesno brisanje");
 				 axios
 			       	.get('api/medsestraa/all/'+this.admin.id, { headers: { Authorization: 'Bearer ' + this.token }})
 			       	.then(response => (this.medsestre = response.data));
 			}).catch((res)=>{
 				console.log('Neuspesno brisanje');
+				alert("Neuspesno brisanje");
 			});
 			
 		},
@@ -225,7 +232,19 @@ Vue.component('medsestre', {
 			if(!this.sestra.radvr_kraj)
 				this.krajGreska = 'Ovo je obavezno polje!';
 			
-
+            if(/[0-9]{2,2}:[0-9]{2,2}/.test(this.sestra.radvr_pocetak) == false)
+	        {
+				this.pocGreska = 'Los format!';
+                return 1;
+				
+			}
+			
+			if(/[0-9]{2,2}:[0-9]{2,2}/.test(this.sestra.radvr_kraj) == false)
+			{
+				this.krajGreska = 'Los format!';
+                return 1;
+				
+			}
 			if(this.sestra.email && this.sestra.ime && this.sestra.prezime && this.sestra.lozinka && this.sestra.adresa && this.sestra.grad && this.sestra.drzava
 					&& this.sestra.radvr_pocetak && this.sestra.radvr_kraj && this.sestra.kontakt){
 				return 0;

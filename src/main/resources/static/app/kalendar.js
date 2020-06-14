@@ -224,28 +224,29 @@ Vue.component('calendar', {
 		    	this.kraj=this.medicinska_sestra.radvr_kraj;
 		    	
 		    	for(let i in this.medicinska_sestra.odsustvo){
-		    		
-		    		if(this.medicinska_sestra.odsustvo[i].tip =="Odsustvo"){
-		    			
-		    			var pp = new Date(this.medicinska_sestra.odsustvo[i].pocetak);
-		    			var kk = new Date(this.medicinska_sestra.odsustvo[i].kraj);
-		    			while(pp<=kk){
-		    				this.odsustva.push(new Date(pp));
-		    				pp.setDate(pp.getDate() + 1);
-		    				
-		    			}
-		    			
-		    			
-		    		}
-		    		else{
+		    		 if(this.medicinska_sestra.odsustvo[i].status != 'zahtev'){
+						if(this.medicinska_sestra.odsustvo[i].tip =="Odsustvo"){
+							
+							var pp = new Date(this.medicinska_sestra.odsustvo[i].pocetak);
+							var kk = new Date(this.medicinska_sestra.odsustvo[i].kraj);
+							while(pp<=kk){
+								this.odsustva.push(new Date(pp));
+								pp.setDate(pp.getDate() + 1);
+								
+							}
+							
+							
+						}
+						else{
 
-		    			var p = new Date(this.medicinska_sestra.odsustvo[i].pocetak);
-		    			var k =new Date(this.medicinska_sestra.odsustvo[i].kraj);	
-		    			while(p<=k){
-		    				this.odmori.push(new Date(p));
-		    				p.setDate(p.getDate() + 1);
-		    			}
-		    					    			
+							var p = new Date(this.medicinska_sestra.odsustvo[i].pocetak);
+							var k =new Date(this.medicinska_sestra.odsustvo[i].kraj);	
+							while(p<=k){
+								this.odmori.push(new Date(p));
+								p.setDate(p.getDate() + 1);
+							}
+						}
+													
 		    		}	
 		    		
 		    		

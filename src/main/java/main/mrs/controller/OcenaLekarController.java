@@ -65,6 +65,7 @@ public class OcenaLekarController {
 		double prosecnaOcena = 0.0;
 		if(staraOcena != null)
 		{
+		
 			prosecnaOcena = (lekar.getProsecnaOcena()*lekar.getBrojOcena() - staraOcena.getOcena() + ocena) / lekar.getBrojOcena();
 			staraOcena.setOcena(ocena);
 			lekar.setProsecnaOcena(prosecnaOcena);
@@ -80,6 +81,7 @@ public class OcenaLekarController {
 		}
 		else
 		{
+			
 			prosecnaOcena = (lekar.getProsecnaOcena()*lekar.getBrojOcena() + ocena) / (lekar.getBrojOcena()+1);
 			lekar.setProsecnaOcena(prosecnaOcena);
 			lekar.setBrojOcena(lekar.getBrojOcena()+1);
@@ -88,6 +90,7 @@ public class OcenaLekarController {
 			novaOcena.setLekarId(lekarId);
 			novaOcena.setPacijentId(p.getId());
 			novaOcena.setOcena(ocena);
+			
 			try {
 				novaOcena = OcenaLekarService.save(novaOcena);
 			}

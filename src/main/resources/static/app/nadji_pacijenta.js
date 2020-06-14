@@ -580,7 +580,6 @@ Vue.component('nadjipacijenta', {
 						.get('api/pregled/istorijaPregleda/'+this.pacijent.id, { headers: { Authorization: 'Bearer ' + this.token }} )
 						.then(response => {
 							this.istorijaPregleda = response.data;
-							console.log(this.istorijaPregleda.length +" nece zadnje da ucita");
 						}).catch((response)=>
 	    	           			{console.log("IStorija nesto pravi problem");}
 						);

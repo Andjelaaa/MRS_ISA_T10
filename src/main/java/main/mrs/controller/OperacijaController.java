@@ -91,10 +91,11 @@ public class OperacijaController {
 		Authentication trenutniKorisnik = SecurityContextHolder.getContext().getAuthentication();
 		Pacijent p = PacijentService.findByEmail(trenutniKorisnik.getName());
 		List<Operacija> zakazaneOp = OperacijaService.getScheduled(p.getId());
-		// convert u dto
+		
 		List<OperacijaDTO> operacijeDTO = new ArrayList<>();
 		for (Operacija s : zakazaneOp) {
 			OperacijaDTO op = new OperacijaDTO(s);
+			
 			if(s.getSala()!=null)
 			{
 				SalaDTO sala = new SalaDTO(s.getSala());
